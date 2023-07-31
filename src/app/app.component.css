@@ -1,0 +1,28 @@
+h1{
+    color: white;
+    margin-right: 38rem;
+    margin-bottom: 2.8rem;
+}
+.head{
+    display: flex;
+    justify-content: end;
+    align-items: end;
+}
+img{
+    padding: 2rem;
+    border-radius: 1rem;
+}
+header{
+    background-color: #318E00;
+    height: 8.5rem;
+}
+#diksha{
+    background-color: white;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+.home{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

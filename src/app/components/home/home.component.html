@@ -1,17 +1,10 @@
-<header>
-    <div class="head">
-    <h1>Digital Learners Passbook</h1>
-    <img id="diksha" src="https://diksha.gov.in/assets/imgs/logos.svg"/>
-    <img src="https://www.meity.gov.in/writereaddata/files/dp-logo.png"/>
-    </div>
-</header>
 <div class="container-fluid">
 <h2 class="intro">Welcome to Digital Learners Passbook</h2>
 <h4 class="intro">Create your own personalised, verified and sharable Learners Passbook
     docket through your DigiLocker credentials.</h4>
 
     <div id="carouselExampleRide" class="carousel slide mx-auto border border-black" data-bs-ride="true" 
-    data-bs-theme="dark" style="height: 530px; background-color:darkcyan;">
+    data-bs-theme="dark" style="height: 530px; background-color:#008b8b;">
         <div class="carousel-inner">
           <div class="carousel-item active">
             <img src="https://thehackernews.com/images/-yyEn5EcxstY/Xt4Nx8PrrjI/AAAAAAAAAac/b0k89Q7FTE4NMWDXL-fBFJEw9Elr3TCFgCLcBGAsYHQ/s728-e100/digilocker.jpg" 
@@ -49,7 +42,15 @@
     </div>
     <div class="vstack gap-1 col-md-5 mx-auto">
         <h3 style="padding: 1.5rem; padding-left: 2.5rem;">Login and generate your Passbook now!!</h3>
-        <button type="button" class="btn btn-primary btn-lg">Generate now</button>
+        <button type="button" class="btn btn-primary btn-lg" (click)="authorise()">
+          Generate now
+        </button>
+        <!--<h3 style="padding: 1.5rem; padding-left: 2.5rem;" class="mx-auto">Or</h3>
+        <a routerLink="/DLP" style="margin-left: 12rem;" class="mx-auto">
+        <button type="button" class="btn btn-primary btn-lg">
+          Create a new DigiLocker account
+        </button>
+        </a>-->
       </div>
 </div>
   
