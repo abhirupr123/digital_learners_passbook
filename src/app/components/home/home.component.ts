@@ -1,6 +1,9 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
+//import { PdfService } from 'src/app/pdf.service';
+//import * as pdfjsLib from 'pdfjs-dist';
+import * as PDFParser from 'pdf-parse';
+import {NgxExtendedPdfViewerModule} from 'ngx-extended-pdf-viewer';
 
 @Component({
   selector: 'app-home',
@@ -8,10 +11,7 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
-    constructor(private http:HttpClient, private route:ActivatedRoute){}
-    /*ngOnInit(): void {
-        this.authorise();
-    }*/
+    constructor(private http:HttpClient){}
     authorise(){
       const api='http://localhost:5000/api/authorise'
       this.http.get<any>(api).subscribe(
@@ -45,8 +45,14 @@ export class HomeComponent {
                               const file='http://localhost:5000/api/file';
                               this.http.post<any>(file,{'token':response.access_token}).subscribe(
                                 (file)=>{
-                                  console.log(file);
-                                })
+                                  /*const blob=new Blob([file],{type:'application/pdf'});
+                                  this.pdf.parsePdfToJSON(blob).subscribe((parse)=>{
+                                    const json=JSON.stringify(parse);*/
+                                    //console.log(file);
+                                    //this.readPdfContents(file);
+                                    this.extractPdfText(file);
+                                  });
+                                //})
                             }
                           )
                         }
@@ -62,7 +68,91 @@ export class HomeComponent {
         },
         (error)=>{
           console.error("API error:",error);
-        }
+         }
       )
+    }
+    /*readPdfContents(pdfData: any): void {
+      pdfjsLib.getDocument({ data: pdfData }).promise.then((pdf) => {
+        const numPages = pdf.numPages;
+        let xmlDocument = '<?xml version="1.0" encoding="UTF-8"?><pdfContents>';
+    
+        for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
+          pdf.getPage(pageNumber).then((page) => {
+            page.getTextContent().then((textContent) => {
+              const pageText = textContent.items
+            .map(item => {
+              if ('str' in item) {
+                return item.str;
+              } else if ('items' in item && Array.isArray(item.items)) {
+                return item.items
+                  .filter(subItem => 'str' in subItem)
+                  .map(subItem => subItem.str)
+                  .join('');
+              } else {
+                return '';
+              }
+            })
+            .join(' ');
+    
+              // Escape special XML characters
+              const escapedPageText = pageText.replace(/&/g, '&amp;')
+                                             .replace(/</g, '&lt;')
+                                             .replace(/>/g, '&gt;')
+                                             .replace(/"/g, '&quot;')
+                                             .replace(/'/g, '&apos;');
+    
+              xmlDocument += `<page number="${pageNumber}"><content>${escapedPageText}</content></page>`;
+              
+              if (pageNumber === numPages) {
+                xmlDocument += '</pdfContents>';
+    
+                // Now you have the complete XML document
+                console.log('XML Content:', xmlDocument);
+              }
+            });
+          });
+        }
+      });
+    }*/
+    /*readPdfContents(pdfData: any): void {
+      pdfjsLib.getDocument({ data: pdfData }).promise.then((pdf) => {
+        const numPages = pdf.numPages;
+    
+        for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
+          pdf.getPage(pageNumber).then((page) => {
+            page.getTextContent().then((textContent) => {
+              const pageText = textContent.items
+            .map(item => {
+              if ('str' in item) {
+                return item.str;
+              } else if ('items' in item && Array.isArray(item.items)) {
+                return item.items
+                  .filter(subItem => 'str' in subItem)
+                  .map(subItem => subItem.str)
+                  .join('');
+              } else {
+                return '';
+              }
+            })
+            .join(' ');
+            console.log('Page ' + pageNumber + ' text:', pageText);
+            });
+          });
+        }
+      });
+    }*/
+    
+    extractPdfText(pdfData: any): void {
+      const pdfBuffer = new Uint8Array(pdfData);
+      const pdfBufferAsBuffer = Buffer.from(pdfBuffer);
+
+      PDFParser(pdfBufferAsBuffer).then((data: any) => {
+        const pdfText = data.text;
+        console.log('PDF Text:', pdfText);
+  
+        // You can now process the extracted text as needed
+      }).catch((error:Error) => {
+        console.error('Error parsing PDF:', error);
+      });
     }
 }
