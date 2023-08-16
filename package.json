@@ -24,7 +24,10 @@
     "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^3.9.179",
     "rxjs": "~7.8.0",
+    "stream": "^0.0.2",
     "tslib": "^2.3.0",
+    "xml-js": "^1.6.11",
+    "xmlbuilder": "^15.1.1",
     "zone.js": "~0.13.0"
   },
   "devDependencies": {
@@ -32,7 +35,7 @@
     "@angular/cli": "~16.1.4",
     "@angular/compiler-cli": "^16.1.0",
     "@types/jasmine": "~4.3.0",
-    "@types/node": "^20.4.9",
+    "@types/node": "^20.5.0",
     "@types/pdf-parse": "^1.1.1",
     "jasmine-core": "~4.6.0",
     "karma": "~6.4.0",

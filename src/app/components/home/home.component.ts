@@ -1,9 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component } from '@angular/core';
-//import { PdfService } from 'src/app/pdf.service';
-//import * as pdfjsLib from 'pdfjs-dist';
-import * as PDFParser from 'pdf-parse';
-import {NgxExtendedPdfViewerModule} from 'ngx-extended-pdf-viewer';
+import * as pdfjsLib from 'pdfjs-dist';
+import xmljs from 'xml-js';
 
 @Component({
   selector: 'app-home',
@@ -38,21 +36,27 @@ export class HomeComponent {
                       this.http.post<any>(details,{'token':response.access_token}).subscribe(
                         (det)=>{
                           console.log(det);
+                          localStorage.removeItem('details');
+                          localStorage.setItem('details',JSON.stringify(det));
                           const files='http://localhost:5000/api/files';
                           this.http.post<any>(files,{'token':response.access_token}).subscribe(
                             (files)=>{
                               console.log(files);
                               const file='http://localhost:5000/api/file';
-                              this.http.post<any>(file,{'token':response.access_token}).subscribe(
-                                (file)=>{
-                                  /*const blob=new Blob([file],{type:'application/pdf'});
-                                  this.pdf.parsePdfToJSON(blob).subscribe((parse)=>{
-                                    const json=JSON.stringify(parse);*/
-                                    //console.log(file);
-                                    //this.readPdfContents(file);
-                                    this.extractPdfText(file);
-                                  });
-                                //})
+                              const httpOptions={
+                                headers:new HttpHeaders({
+                                  'Content-Type': 'application/json'
+                                }),
+                                responseType:'arraybuffer' as 'json',
+                              };
+                              this.http.post<any>(file,{'token':response.access_token},httpOptions).subscribe(
+                                (file:ArrayBuffer)=>{
+                                  this.extractTextFromPdf(file).then((pdfText) => {
+                                    console.log(pdfText);
+                                    // Continue with the extracted PDF text
+                                    console.log(this.convertToXML(pdfText));
+                                  })                               
+                                });
                             }
                           )
                         }
@@ -71,88 +75,55 @@ export class HomeComponent {
          }
       )
     }
-    /*readPdfContents(pdfData: any): void {
-      pdfjsLib.getDocument({ data: pdfData }).promise.then((pdf) => {
-        const numPages = pdf.numPages;
-        let xmlDocument = '<?xml version="1.0" encoding="UTF-8"?><pdfContents>';
-    
-        for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
-          pdf.getPage(pageNumber).then((page) => {
-            page.getTextContent().then((textContent) => {
-              const pageText = textContent.items
-            .map(item => {
-              if ('str' in item) {
-                return item.str;
-              } else if ('items' in item && Array.isArray(item.items)) {
-                return item.items
-                  .filter(subItem => 'str' in subItem)
-                  .map(subItem => subItem.str)
-                  .join('');
-              } else {
-                return '';
-              }
-            })
-            .join(' ');
-    
-              // Escape special XML characters
-              const escapedPageText = pageText.replace(/&/g, '&amp;')
-                                             .replace(/</g, '&lt;')
-                                             .replace(/>/g, '&gt;')
-                                             .replace(/"/g, '&quot;')
-                                             .replace(/'/g, '&apos;');
-    
-              xmlDocument += `<page number="${pageNumber}"><content>${escapedPageText}</content></page>`;
-              
-              if (pageNumber === numPages) {
-                xmlDocument += '</pdfContents>';
-    
-                // Now you have the complete XML document
-                console.log('XML Content:', xmlDocument);
-              }
-            });
-          });
-        }
-      });
-    }*/
-    /*readPdfContents(pdfData: any): void {
-      pdfjsLib.getDocument({ data: pdfData }).promise.then((pdf) => {
-        const numPages = pdf.numPages;
-    
-        for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
-          pdf.getPage(pageNumber).then((page) => {
-            page.getTextContent().then((textContent) => {
-              const pageText = textContent.items
-            .map(item => {
-              if ('str' in item) {
-                return item.str;
-              } else if ('items' in item && Array.isArray(item.items)) {
-                return item.items
-                  .filter(subItem => 'str' in subItem)
-                  .map(subItem => subItem.str)
-                  .join('');
-              } else {
-                return '';
-              }
-            })
-            .join(' ');
-            console.log('Page ' + pageNumber + ' text:', pageText);
-            });
-          });
-        }
-      });
-    }*/
-    
-    extractPdfText(pdfData: any): void {
-      const pdfBuffer = new Uint8Array(pdfData);
-      const pdfBufferAsBuffer = Buffer.from(pdfBuffer);
-
-      PDFParser(pdfBufferAsBuffer).then((data: any) => {
-        const pdfText = data.text;
-        console.log('PDF Text:', pdfText);
-  
-        // You can now process the extracted text as needed
-      }).catch((error:Error) => {
-        console.error('Error parsing PDF:', error);
-      });
+    async extractTextFromPdf(pdfData: ArrayBuffer): Promise<string> {
+    const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+    const textItems = await this.getTextFromPages(pdf);
+    return textItems.join('\n');
     }
+    
+    async getTextFromPages(pdf: pdfjsLib.PDFDocumentProxy): Promise<string[]> {
+      const textItems: string[] = [];
+      for (let pageIndex = 1; pageIndex <= pdf.numPages; pageIndex++) {
+        const page = await pdf.getPage(pageIndex);
+        const textContent = await page.getTextContent();
+        
+        textContent.items.forEach((item) => {
+          if (item instanceof Object && 'str' in item) {
+            textItems.push(item.str);
+          }
+        });
+      }
+      return textItems;
+    }
+  convertToXML(pdfText: string): string {
+    const paragraphs = pdfText.split('\n');
+  
+    const xmlData = {
+      elements: [
+        {
+          type: 'element',
+          name: 'document',
+          elements: paragraphs.map(paragraph => ({
+            type: 'element',
+            name: 'paragraph',
+            elements: [
+              {
+                type: 'text',
+                text: paragraph
+              }
+            ]
+          }))
+        }
+      ]
+    };
+  
+    const xmlOptions = {
+      spaces: 2,
+      compact: true
+    };
+  
+    const xmlDocument = xmljs.js2xml(xmlData, xmlOptions);
+  
+    return xmlDocument;
+  }
 }
