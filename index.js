@@ -1,4 +1,4 @@
-import express, { response, text, urlencoded } from 'express';
+import express from 'express';
 import axios from 'axios';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -7,7 +7,7 @@ const app=express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-dotenv.config();
+dotenv.config({path:'./.env'});
 
 app.get("/api/authorise",async(req,res)=>{
       
@@ -82,13 +82,16 @@ app.post('/api/files',async(req,res)=>{
 
 app.post('/api/file',async(req,res)=>{
     const file=await axios.get(`https://digilocker.meripehchaan.gov.in/public/oauth2/1/file/${process.env.FILE_URI}`,{
+    responseType:'arraybuffer',
     headers:{
         Authorization: `Bearer ${req.body.token}`
     },
     params:{
         uri:process.env.FILE_URI
     }});
-    res.json(file.data);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'inline');
+    res.send(file.data);
 })
 
 app.listen(5000,()=>
