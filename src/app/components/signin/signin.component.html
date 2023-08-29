@@ -1,0 +1,29 @@
+<div *ngIf="fetched">
+  <div>
+    <h2 style="display: flex; justify-content: center; align-items: center; padding-top: 2rem; font-size:xx-large;">{{details.name}}</h2>
+    <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size:x-large;">Gender : {{details.gender}}</h2>
+    <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size:x-large;">Date of Birth : {{details.dob}}</h2>
+    <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size: x-large;">Mobile Number : {{details.mobile}}</h2>
+    <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size: x-large;"> CLASS X Marks - ICSE</h2>
+    
+    
+    <table class="table" style="padding-top: 5rem;">
+      <thead>
+        <tr>
+          <th scope="col">Subject</th>
+          <th scope="col">Marks</th>
+        </tr>
+      </thead>
+      
+      <tbody>
+      <tr *ngFor="let data of parsedData">
+        <td>{{ data }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div *ngIf="!fetched">
+  <p>Data is being fetched</p>
+</div>

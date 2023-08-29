@@ -12,41 +12,45 @@ export class SigninComponent implements OnInit {
   fetched=false;
   constructor(){}
   ngOnInit(): void {
+      const length=Number(localStorage.getItem('length'));
       const stored=localStorage.getItem('details');
-      const xml=localStorage.getItem('filtered');
-      if(stored!=null&&xml!=null)        
+      for(let i=1;i<length;i++)
       {
-      this.details=JSON.parse(stored);
-      const parser = new Parser();
-      parser.parseString(xml, (err, result) => {
-      if (!err) {
-      const parsedData = result;
-      if (parsedData && parsedData.certificate) {
-      const certificate = parsedData.certificate;
-      const elements = certificate.elements;
+        const xml=localStorage.getItem(`${i}`);
+        if(stored!=null&&xml!=null)        
+        {
+          this.details=JSON.parse(stored);
+          const parser = new Parser();
+          parser.parseString(xml, (err, result) => {
+          if (!err) {
+          const parsedData = result;
+          if (parsedData && parsedData.certificate) {
+          const certificate = parsedData.certificate;
+          const elements = certificate.elements;
 
-      if (elements && elements.length > 0) {
-        this.parsedData = [];
+          if (elements && elements.length > 0) {
+          this.parsedData = [];
 
-        for (let i = 0; i < elements.length; i++) {
+          for (let i = 0; i < elements.length; i++) {
           const textData = elements[i].text[0].trim();
           this.parsedData.push(textData);
-        }
+          }
 
-        console.log(this.parsedData);
+          console.log(this.parsedData);
+          } else {
+          console.log("No elements found.");
+          }
         } else {
-        console.log("No elements found.");
-        }
-      } else {
-      console.log("Certificate data not found.");
+        console.log("Certificate data not found.");
+      }
+    } else {
+      console.log(err);
     }
-  } else {
-    console.log(err);
-  }
-});
-
+    });
+      
       console.log(this.parsedData);
       this.fetched=true;
+      }
     }
   }
 }

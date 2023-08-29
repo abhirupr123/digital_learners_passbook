@@ -1,7 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component } from '@angular/core';
 import * as pdfjsLib from 'pdfjs-dist';
-import xmljs from 'xml-js';
 
 @Component({
   selector: 'app-home',
@@ -49,16 +48,20 @@ export class HomeComponent {
                                 }),
                                 responseType:'arraybuffer' as 'json',
                               };
-                              this.http.post<any>(file,{'token':response.access_token},httpOptions).subscribe(
+                              localStorage.setItem('length',files.length);
+                              for(let i=1;i<files.items.length;i++)
+                              {
+                                console.log(files.items[i].uri);               
+                                this.http.post<any>(file,{'token':response.access_token,'file':files.items[i].uri},httpOptions).subscribe(
                                 (file:ArrayBuffer)=>{
                                   this.extractTextFromPdf(file).then((pdfText) => {
-                                    console.log(pdfText);
                                     const xml=this.convertToXML(pdfText);
                                     console.log(xml);
-                                    localStorage.removeItem('filtered');
-                                    localStorage.setItem('filtered',xml);
+                                    localStorage.removeItem(`${i}`);
+                                    localStorage.setItem(`${i}`,xml);
                                   })                               
                                 });
+                              }
                             }
                           )
                         }
@@ -100,12 +103,15 @@ export class HomeComponent {
 
   convertToXML(pdfText: string): string {
     const paragraphs = pdfText.split('\n');
-
+    let startCreatingXML=false;
     let xmlData= `<certificate>`;
 
     for (let paragraph of paragraphs) {
       paragraph = paragraph.trim();
-      if (paragraph) {
+      if (/20\d{2}/.test(paragraph)) {
+        startCreatingXML = true;
+      }
+      if (startCreatingXML && paragraph) {
         const tempElement = document.createElement("text");
         tempElement.textContent = paragraph.replace("'", "&apos;");
         xmlData += `  
