@@ -53,8 +53,10 @@ export class HomeComponent {
                                 (file:ArrayBuffer)=>{
                                   this.extractTextFromPdf(file).then((pdfText) => {
                                     console.log(pdfText);
-                                    // Continue with the extracted PDF text
-                                    console.log(this.convertToXML(pdfText));
+                                    const xml=this.convertToXML(pdfText);
+                                    console.log(xml);
+                                    localStorage.removeItem('filtered');
+                                    localStorage.setItem('filtered',xml);
                                   })                               
                                 });
                             }
@@ -95,35 +97,26 @@ export class HomeComponent {
       }
       return textItems;
     }
+
   convertToXML(pdfText: string): string {
     const paragraphs = pdfText.split('\n');
-  
-    const xmlData = {
-      elements: [
-        {
-          type: 'element',
-          name: 'document',
-          elements: paragraphs.map(paragraph => ({
-            type: 'element',
-            name: 'paragraph',
-            elements: [
-              {
-                type: 'text',
-                text: paragraph
-              }
-            ]
-          }))
-        }
-      ]
-    };
-  
-    const xmlOptions = {
-      spaces: 2,
-      compact: true
-    };
-  
-    const xmlDocument = xmljs.js2xml(xmlData, xmlOptions);
-  
-    return xmlDocument;
+
+    let xmlData= `<certificate>`;
+
+    for (let paragraph of paragraphs) {
+      paragraph = paragraph.trim();
+      if (paragraph) {
+        const tempElement = document.createElement("text");
+        tempElement.textContent = paragraph.replace("'", "&apos;");
+        xmlData += `  
+          <elements>
+            ${tempElement.outerHTML}
+          </elements>
+        `;
+      }
+    }
+
+    xmlData += '</certificate>';
+    return xmlData;
   }
 }

@@ -25,8 +25,10 @@
     "pdfjs-dist": "^3.9.179",
     "rxjs": "~7.8.0",
     "stream": "^0.0.2",
+    "timers-browserify": "^2.0.12",
     "tslib": "^2.3.0",
     "xml-js": "^1.6.11",
+    "xml2js": "^0.6.2",
     "xmlbuilder": "^15.1.1",
     "zone.js": "~0.13.0"
   },
@@ -37,6 +39,7 @@
     "@types/jasmine": "~4.3.0",
     "@types/node": "^20.5.0",
     "@types/pdf-parse": "^1.1.1",
+    "@types/xml2js": "^0.4.11",
     "jasmine-core": "~4.6.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
