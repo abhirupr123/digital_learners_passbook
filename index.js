@@ -81,7 +81,7 @@ app.post('/api/files',async(req,res)=>{
 })
 
 app.post('/api/file',async(req,res)=>{
-    const file=await axios.get(`https://digilocker.meripehchaan.gov.in/public/oauth2/1/file/${process.env.FILE_URI}`,{
+    const file=await axios.get(`https://digilocker.meripehchaan.gov.in/public/oauth2/1/file/${req.body.file}`,{
     responseType:'arraybuffer',
     headers:{
         Authorization: `Bearer ${req.body.token}`
