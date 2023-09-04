@@ -48,7 +48,7 @@ export class HomeComponent {
                                 }),
                                 responseType:'arraybuffer' as 'json',
                               };
-                              localStorage.setItem('length',files.length);
+                              localStorage.setItem('length',files.items.length);
                               for(let i=1;i<files.items.length;i++)
                               {
                                 console.log(files.items[i].uri);               

@@ -1,26 +1,58 @@
 <div *ngIf="fetched">
-  <div>
+  <div id="pdf" #pdf>
     <h2 style="display: flex; justify-content: center; align-items: center; padding-top: 2rem; font-size:xx-large;">{{details.name}}</h2>
-    <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size:x-large;">Gender : {{details.gender}}</h2>
+    <div *ngIf="details.gender==='M'">
+      <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size:x-large;">Gender : Male</h2>
+    </div>
+    <div *ngIf="details.gender==='F'">
+      <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size:x-large;">Gender : Female</h2>
+    </div>
     <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size:x-large;">Date of Birth : {{details.dob}}</h2>
     <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size: x-large;">Mobile Number : {{details.mobile}}</h2>
-    <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size: x-large;"> CLASS X Marks - ICSE</h2>
-    
-    
+    <div style="display: flex; justify-content: center; align-items: center; border: 2pt solid black;">
     <table class="table" style="padding-top: 5rem;">
-      <thead>
-        <tr>
-          <th scope="col">Subject</th>
-          <th scope="col">Marks</th>
-        </tr>
-      </thead>
       
       <tbody>
-      <tr *ngFor="let data of parsedData">
-        <td>{{ data }}</td>
-      </tr>
+      <div *ngFor="let data of parsedData">
+        <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size: x-large;"> CLASS X Marks - ICSE</h2>
+        <tr *ngFor="let item of data">
+        <div *ngIf="doesMatchPattern(item, '^(20\\d{2}|19\\d{2})')">
+           <td>Year of Passing:</td>
+           <td> {{ item }}</td>
+        </div>
+        <div *ngIf="containsSchoolOrCollege(item)">
+          <div  *ngIf="decode(item) as dec">
+          <td>Name of School or College</td>
+          <td> {{ dec }}</td>
+          </div>
+        </div>
+        <div *ngIf="index(item)">
+          <td>Index Number</td>
+          <td>{{item}}</td>
+        </div>
+        <div *ngIf="roll(item)">
+          <td>Roll Number</td>
+          <td>{{item}}</td>
+        </div>
+        <div *ngIf="resultDate(item)">
+          <td>Date of declaration of results</td>
+          <td>{{item}}</td>
+        </div>
+        <div *ngIf="pass(item)">
+          <td>Result</td>
+          <td>PASS</td>
+        </div>
+        <td>{{item}}</td>
+        </tr>
+      </div>
       </tbody>
     </table>
+    </div>
+  </div>
+  <div style="display: flex; justify-content: center; padding: 2rem;">
+  <button (click)="download()" type="button" class="btn btn-primary">
+    Download PDF
+  </button>
   </div>
 </div>
 

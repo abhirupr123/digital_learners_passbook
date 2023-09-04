@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {Parser} from 'xml2js';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-signin',
@@ -7,6 +8,7 @@ import {Parser} from 'xml2js';
   styleUrls: ['./signin.component.css']
 })
 export class SigninComponent implements OnInit {
+  @ViewChild('pdf',{static:false}) el!:ElementRef;
   details:any;
   parsedData:any[]=[];
   fetched=false;
@@ -17,9 +19,11 @@ export class SigninComponent implements OnInit {
       for(let i=1;i<length;i++)
       {
         const xml=localStorage.getItem(`${i}`);
+        console.log(xml);
         if(stored!=null&&xml!=null)        
         {
           this.details=JSON.parse(stored);
+          this.details.dob=this.details.dob.substring(0, 2) + '-' + this.details.dob.substring(2, 4) + '-' + this.details.dob.substring(4);
           const parser = new Parser();
           parser.parseString(xml, (err, result) => {
           if (!err) {
@@ -29,13 +33,14 @@ export class SigninComponent implements OnInit {
           const elements = certificate.elements;
 
           if (elements && elements.length > 0) {
-          this.parsedData = [];
+          const parsed = [];
 
           for (let i = 0; i < elements.length; i++) {
           const textData = elements[i].text[0].trim();
-          this.parsedData.push(textData);
+          //this.parsedData.push(textData);
+          parsed.push(textData);
           }
-
+          this.parsedData.push(parsed);
           console.log(this.parsedData);
           } else {
           console.log("No elements found.");
@@ -53,4 +58,41 @@ export class SigninComponent implements OnInit {
       }
     }
   }
+  doesMatchPattern(inputString: string, pattern: string): boolean {
+    const regex = new RegExp(pattern);
+    return regex.test(inputString);
+  }
+  containsSchoolOrCollege(name: string): boolean {
+    return name.toLowerCase().includes('school') || name.toLowerCase().includes('college');
+  }
+  decode(name: string):string{
+    const enc=name.replace(/&apos;/g,"'").replace(/&amp;/g,"&");
+    return enc;
+  }
+  index(num:string):boolean{
+    return num.includes('/');
+  }
+  roll(num:string):boolean{
+    return /^\d{6,7}$/.test(num);
+  }
+  resultDate(date:string):boolean{
+    const res=date.match(/[0-9]/g);
+    res?res.join(''):null;
+    if(!res && typeof res!=='string')
+    return false;
+    const parts = date.split('.').reverse();
+    parts.join('-');
+    return parts.length===3;
+  }
+  pass(res:string):boolean{
+    return res.includes('PASS');
+  }
+  download(){
+    let pdf=new jsPDF('p','pt','a4');
+    pdf.html(this.el.nativeElement,{
+      callback:(pdf)=>{
+        pdf.save("dlp.pdf");
+      }
+    })
+  } 
 }
