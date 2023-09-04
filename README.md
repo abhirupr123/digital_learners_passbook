@@ -10,7 +10,7 @@ The Tech Stack used for this project is Angular for the frontend and NodeJS for 
 
 The basic functionality of the Learners Passbook is to leverage DigiLocker APIs to gather the verified user data. This can range from various types of credentials, such as, High School and Intermediate Marksheets, College Degree Certificates as well as DIKSHA course completion certificates as well. Basically all the educational achievements of the learner which is present on DIgiLocker and issued by the user. After extracting this data, it is then displayed in a summarised manner as a document. This document can then be used by other organizations and educational institutes to verify the credibility of the information shared by the user.
 
-## Librarires and Functions implemented
+## Libraries and Functions implemented
 
 The data extracted from DigiLocker will either be an XML or a PDF document, depending upon the availibility of the particular format in the document issuers repository. Since we are dealing with PDF data as it is more commonly received, there are a few libraries which need to be installed before the program is executed. The libraries are mentioned below - 
 
