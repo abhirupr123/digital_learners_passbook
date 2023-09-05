@@ -9,6 +9,8 @@ import jsPDF from 'jspdf';
 })
 export class SigninComponent implements OnInit {
   @ViewChild('pdf',{static:false}) el!:ElementRef;
+  desc:any;
+  issuer:any;
   details:any;
   parsedData:any[]=[];
   fetched=false;
@@ -19,6 +21,10 @@ export class SigninComponent implements OnInit {
       for(let i=1;i<length;i++)
       {
         const xml=localStorage.getItem(`${i}`);
+        this.desc=localStorage.getItem(`description${i}`);
+        this.issuer=localStorage.getItem(`issuer${i}`);
+        console.log(this.desc);
+        console.log(this.issuer);
         console.log(xml);
         if(stored!=null&&xml!=null)        
         {
@@ -34,10 +40,10 @@ export class SigninComponent implements OnInit {
 
           if (elements && elements.length > 0) {
           const parsed = [];
-
+          parsed.push(this.desc);
+          parsed.push(this.issuer);
           for (let i = 0; i < elements.length; i++) {
           const textData = elements[i].text[0].trim();
-          //this.parsedData.push(textData);
           parsed.push(textData);
           }
           this.parsedData.push(parsed);

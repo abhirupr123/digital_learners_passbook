@@ -14,7 +14,6 @@
       
       <tbody>
       <div *ngFor="let data of parsedData">
-        <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size: x-large;"> CLASS X Marks - ICSE</h2>
         <tr *ngFor="let item of data">
         <div *ngIf="doesMatchPattern(item, '^(20\\d{2}|19\\d{2})')">
            <td>Year of Passing:</td>

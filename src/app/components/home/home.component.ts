@@ -51,12 +51,14 @@ export class HomeComponent {
                               localStorage.setItem('length',files.items.length);
                               for(let i=1;i<files.items.length;i++)
                               {
-                                console.log(files.items[i].uri);               
+                                console.log(files.items[i].uri);
                                 this.http.post<any>(file,{'token':response.access_token,'file':files.items[i].uri},httpOptions).subscribe(
                                 (file:ArrayBuffer)=>{
                                   this.extractTextFromPdf(file).then((pdfText) => {
                                     const xml=this.convertToXML(pdfText);
                                     console.log(xml);
+                                    localStorage.setItem(`description${i}`,files.items[i].description);
+                                    localStorage.setItem(`issuer${i}`,files.items[i].issuer);               
                                     localStorage.removeItem(`${i}`);
                                     localStorage.setItem(`${i}`,xml);
                                   })                               
