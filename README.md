@@ -1,27 +1,63 @@
-# DigitalPassbook
+# Digital Learners Passbook
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.1.4.
+The Learners Passbook will act as a digital docket for access by relevant stakeholders wherein it will comprise of digitally verifiable credentials and documents of the learner. The passbook will act as a log of the skills, capabilities, and achievements of the learner. At every touchpoint of the learner journey starting from admission till his employment, there is a need for easily accessible, readable and verifiable credentials.
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+The Tech Stack used for this project is Angular for the frontend and NodeJS for the backend. The backend code is commited at a separate branch and can be accessed [here](https://github.com/abhirupr123/digital-learners-passbook/tree/backend). Along with that styling has been applied using Bootstrap and the different libraries used are mentioned below.
 
-## Code scaffolding
+## Functionality
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+The basic functionality of the Learners Passbook is to leverage DigiLocker APIs to gather the verified user data. This can range from various types of credentials, such as, High School and Intermediate Marksheets, College Degree Certificates as well as DIKSHA course completion certificates as well. Basically all the educational achievements of the learner which is present on DIgiLocker and issued by the user. After extracting this data, it is then displayed in a summarised manner as a document. This document can then be used by other organizations and educational institutes to verify the credibility of the information shared by the user.
 
-## Build
+## Libraries and Functions implemented
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+The data extracted from DigiLocker will either be an XML or a PDF document, depending upon the availibility of the particular format in the document issuers repository. Since we are dealing with PDF data as it is more commonly received, there are a few libraries which need to be installed before the program is executed. The libraries are mentioned below - 
 
-## Running unit tests
+```
+npm install pdfjs-dist xml2js jspdf
+```
+Each of these functions play a vital role in the extracting the data from the PDF file, converting the extracted data into corresponding XML document and downloading the resulting summarised data into a PDF file respectively. The code snippets shows how these three libraries have been used - 
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```
+async extractTextFromPdf(pdfData: ArrayBuffer): Promise<string> {
+    const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+    const textItems = await this.getTextFromPages(pdf);
+    return textItems.join('\n');
+    }
+```
+```
+download(){
+    let pdf=new jsPDF('p','pt','a4');
+    pdf.html(this.el.nativeElement,{
+      callback:(pdf)=>{
+        pdf.save("dlp.pdf");
+      }
+    })
+  } 
+```
+```
+import {Parser} from 'xml2js';
 
-## Running end-to-end tests
+const parser = new Parser();
+          parser.parseString(xml, (err, result) => {
+          if (!err) {
+          const parsedData = result;
+          if (parsedData && parsedData.certificate) {
+          const certificate = parsedData.certificate;
+          const elements = certificate.elements;
+          if (elements && elements.length > 0) {
+          const parsed = [];
+          for (let i = 0; i < elements.length; i++) {
+          const textData = elements[i].text[0].trim();
+          parsed.push(textData);
+          }
+          this.parsedData.push(parsed);
+          console.log(this.parsedData);
+          }
+```
+## Program Flow 
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+https://github.com/abhirupr123/digital-learners-passbook/assets/111787164/da018889-e8a5-491f-998a-134b6cc58584
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+The video given above properly demonstrates how exactly the program execution takes place starting from OTP generation to the creation of Passbook. The design shown is an indicative one and the final passbook format might be changed to accomodate the download feature and a few more information.
