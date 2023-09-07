@@ -1,6 +1,9 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {Parser} from 'xml2js';
 import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import forge from 'node-forge';
+import QRCode from 'qrcode-generator';
 
 @Component({
   selector: 'app-signin',
@@ -12,6 +15,7 @@ export class SigninComponent implements OnInit {
   desc:any;
   issuer:any;
   details:any;
+  showbutton=true;
   parsedData:any[]=[];
   fetched=false;
   constructor(){}
@@ -94,11 +98,84 @@ export class SigninComponent implements OnInit {
     return res.includes('PASS');
   }
   download(){
-    let pdf=new jsPDF('p','pt','a4');
-    pdf.html(this.el.nativeElement,{
-      callback:(pdf)=>{
-        pdf.save("dlp.pdf");
+    this.showbutton=false;
+  
+  setTimeout(()=>{
+  const pdf = new jsPDF('p', 'pt', 'a3');
+
+  const htmlContent = this.el.nativeElement; 
+  const pdfHeight = pdf.internal.pageSize.getHeight();
+
+  const addHTMLToPDF = async () => {
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfMargin = 20; 
+    const pdfContentHeight = pdfHeight - 2 * pdfMargin;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = pdfWidth;
+    canvas.height = pdfContentHeight;
+
+    const ctx = canvas.getContext('2d');
+    const htmlToCanvasOptions = {
+      scale: 0.55, 
+      canvas: canvas,
+      logging: true,
+      width: pdfWidth,
+      height: pdfContentHeight
+    };
+
+    return html2canvas(htmlContent, htmlToCanvasOptions).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'PNG', pdfMargin, pdfMargin, pdfWidth, pdfContentHeight);
+    
+      const verifiedStampImg = new Image();
+      verifiedStampImg.src = 'https://bfsi.eletsonline.com/wp-content/uploads/2016/10/digital-india.jpg'; // Replace with the actual path to your "Verified" stamp image
+      pdf.addImage(verifiedStampImg, 'PNG', 650, 10, 140, 70); 
+    
+    });
+  };
+
+  addHTMLToPDF().then(async() => {
+    try{
+    const cert=this.createDigitalSignature(pdf, 'E:\dlp\private_key.pem', 'E:\dlp\mycert.pem')
+    const qr=this.embedCertificateData(await cert); 
+    pdf.addImage(qr, 'PNG', 670, 90, 90, 90);
+        pdf.save('dlp.pdf');
+    }
+      catch(error) {
+        console.error('Error creating digital signature:', error);
       }
-    })
-  } 
+      finally{
+        this.showbutton=true;
+      };
+  });
+  },500);
 }
+
+  async createDigitalSignature(pdf: jsPDF, privateKeyPath: string, certificatePath: string) {
+    return new Promise<string>((resolve, reject) => {
+    
+    const keyPair = forge.pki.rsa.generateKeyPair({ bits: 2048 });
+
+    const privateKeyPem = forge.pki.privateKeyToPem(keyPair.privateKey);
+  
+    const pdfContentHash = forge.md.sha256.create();
+    pdfContentHash.update(pdf.output());
+  
+    const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
+    const signature = privateKey.sign(pdfContentHash);
+  
+    const encode=forge.util.encode64(signature);
+    resolve(encode);
+  });
+}
+
+embedCertificateData(certificateData:string) {
+  const qr = QRCode(0, 'L');
+  qr.addData(certificateData);
+  qr.make();
+  const qrImage = qr.createDataURL();
+  return qrImage;
+}
+
+} 
