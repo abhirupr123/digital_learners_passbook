@@ -58,6 +58,6 @@ const parser = new Parser();
 ```
 ## Program Flow 
 
-https://github.com/abhirupr123/digital-learners-passbook/assets/111787164/da018889-e8a5-491f-998a-134b6cc58584
+https://github.com/abhirupr123/digital-learners-passbook/assets/111787164/a5dd7391-b785-4aa8-a7f4-8a51812eddab
 
-The video given above properly demonstrates how exactly the program execution takes place starting from OTP generation to the creation of Passbook. The design shown is an indicative one and the final passbook format might be changed to accomodate the download feature and a few more information.
+The video given above properly demonstrates how exactly the program execution takes place starting from OTP generation to the creation of Passbook and PDF generation. The downloaded PDF contains a QR Code containing the encrypted Digital Certificate, which when decoded by any organization or individual, will display the name of the person or organization generating the Passbook, the name of the organization as well as the timestamp, when the document was being issued. This ensures that the generated Passbook is unique, tamper-proof and can be verified and authenticated which maintains its originality. 
