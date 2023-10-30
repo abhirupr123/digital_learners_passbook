@@ -9,7 +9,8 @@
     </div>
     <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size:x-large;">Date of Birth : {{details.dob}}</h2>
     <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size: x-large;">Mobile Number : {{details.mobile}}</h2>
-    <div style="display: flex; justify-content: center; align-items: center; border: 2pt solid black;">
+    <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size: x-large;">Class X Marksheet</h2>
+    <!--<div style="display: flex; justify-content: center; align-items: center; border: 2pt solid black;">
     <table class="table" style="padding-top: 5rem;">
       
       <tbody>
@@ -47,9 +48,93 @@
       </tbody>
     </table>
     </div>
-  </div>
+  </div>-->
+
+  <table class="table" style="padding-top: 5rem;">
+    <tr>
+      <td>Issuer Organization</td>
+      <td>Council for the Indian School Certificate Examination (CISCE)</td>
+    </tr>
+    <tr>
+      <td>Year of Passing</td>
+      <td>2017</td>
+    </tr>
+    <tr>
+      <td>Roll Number</td>
+      <td>6467026</td>
+    </tr>
+    <tr>
+      <td>Index Number</td>
+      <td>1173384/291</td>
+    </tr>
+    <tr>
+      <td>ENGLISH</td>
+      <td>HINDI</td>
+      <td>HISTORY, CIVICS AND GEOGRAPHY(HCS-A GEO-A)</td>
+      <td>SCIENCE(PHY-A, CHE-A, BIO-A)</td>
+      <td>MATHEMATICS</td>
+      <td>COMPUTER APPLICATIONS</td>
+    </tr>
+    <tr>
+      <td>89</td>
+      <td>90</td>
+      <td>94</td>
+      <td>91</td>
+      <td>90</td>
+      <td>99</td>
+    </tr>
+    <tr>
+      <td>Name of School</td>
+      <td>Boys' High School and College</td>
+    </tr>
+    <tr>
+      <td>Result</td>
+      <td>PASS</td>
+    </tr>
+  </table>
+  <h2 style="display: flex; justify-content: left; padding-left: 2rem; font-size: x-large;">Class XII Marksheet</h2>
+  <table class="table" style="padding-top: 5rem;">
+    <tr>
+      <td>Issuer Organization</td>
+      <td>Council for the Indian School Certificate Examination (CISCE)</td>
+    </tr>
+    <tr>
+      <td>Year of Passing</td>
+      <td>2019</td>
+    </tr>
+    <tr>
+      <td>Roll Number</td>
+      <td>6467026</td>
+    </tr>
+    <tr>
+      <td>Index Number</td>
+      <td>2192622/103</td>
+    </tr>
+    <tr>
+      <td>ENGLISH</td>
+      <td>HINDI</td>
+      <td>PHYSICS</td>
+      <td>CHEMISTRY</td>
+      <td>MATHEMATICS</td>
+    </tr>
+    <tr>
+      <td>90</td>
+      <td>84</td>
+      <td>86</td>
+      <td>81</td>
+      <td>93</td>
+    </tr>
+    <tr>
+      <td>Name of School</td>
+      <td>Boys' High School and College</td>
+    </tr>
+    <tr>
+      <td>Result</td>
+      <td>PASS</td>
+    </tr>
+  </table>
   <div style="display: flex; justify-content: center; padding: 2rem;">
-  <button (click)="download()" type="button" class="btn btn-primary">
+  <button *ngIf="showbutton"  (click)="download()" type="button" class="btn btn-primary">
     Download PDF
   </button>
   </div>
